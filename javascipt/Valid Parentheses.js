@@ -22,3 +22,49 @@ Output: true
 
 
 /**
+ * 
+ * 
+ * /**
+ * @param {string} s
+ * @return {boolean}
+ */
+function isValid(s) {
+    // Stack to store opening brackets
+    const stack = [];
+    
+    // Map closing brackets to their opening counterparts
+    const bracketMap = {
+        ')': '(',
+        '}': '{',
+        ']': '['
+    };
+    
+    // Iterate through each character
+    for (let char of s) {
+        // If it's a closing bracket
+        if (bracketMap[char]) {
+            // Pop from stack or use dummy if empty
+            const topElement = stack.length === 0 ? '#' : stack.pop();
+            
+            // Check if top element matches
+            if (topElement !== bracketMap[char]) {
+                return false;
+            }
+        } else {
+            // It's an opening bracket - push to stack
+            stack.push(char);
+        }
+    }
+    
+    // Stack should be empty if all brackets are closed
+    return stack.length === 0;
+}
+
+// Test cases
+console.log(isValid("()"));           // true
+console.log(isValid("()[]{}"));       // true
+console.log(isValid("(]"));           // false
+console.log(isValid("([)]"));         // false
+console.log(isValid("{[]}"));         // true
+console.log(isValid(""));             // true (empty string)
+console.log(isValid("((("));          // false
