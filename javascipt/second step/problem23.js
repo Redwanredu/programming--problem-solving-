@@ -1,182 +1,166 @@
 /**
- * LEETCODE SOLUTIONS - Problem 22: Add Binary
+ * LEETCODE SOLUTIONS - Problem 23: Sqrt(x)
  * 
- * File: 22-add-binary.js
+ * File: 23-sqrt-x.js
  * Author: Your Name
- * Date: 2026-09-27
+ * Date: 2026-09-29
  * 
- * Problem: https://leetcode.com/problems/add-binary/
+ * Problem: https://leetcode.com/problems/sqrtx/
  */
 
-// ============ SOLUTION 1: Two Pointers (Optimal) ============
-function addBinary(a, b) {
-    let result = '';
-    let carry = 0;
-    let i = a.length - 1;
-    let j = b.length - 1;
+// ============ SOLUTION 1: Binary Search (Optimal) ============
+function mySqrt(x) {
+    if (x < 2) return x;
     
-    while (i >= 0 || j >= 0 || carry > 0) {
-        const digitA = i >= 0 ? parseInt(a[i]) : 0;
-        const digitB = j >= 0 ? parseInt(b[j]) : 0;
+    let left = 1;
+    let right = Math.floor(x / 2);
+    let result = 0;
+    
+    while (left <= right) {
+        const mid = Math.floor((left + right) / 2);
+        const square = mid * mid;
         
-        const sum = digitA + digitB + carry;
-        result = (sum % 2) + result;
-        carry = Math.floor(sum / 2);
-        
-        i--;
-        j--;
-    }
-    
-    return result;
-}
-
-// ============ SOLUTION 2: Array for Efficiency ============
-function addBinaryArray(a, b) {
-    const result = [];
-    let carry = 0;
-    let i = a.length - 1;
-    let j = b.length - 1;
-    
-    while (i >= 0 || j >= 0 || carry > 0) {
-        const digitA = i >= 0 ? a.charCodeAt(i) - 48 : 0;
-        const digitB = j >= 0 ? b.charCodeAt(j) - 48 : 0;
-        
-        const sum = digitA + digitB + carry;
-        result.push(sum % 2);
-        carry = Math.floor(sum / 2);
-        
-        i--;
-        j--;
-    }
-    
-    return result.reverse().join('');
-}
-
-// ============ SOLUTION 3: BigInt ============
-function addBinaryBigInt(a, b) {
-    return (BigInt('0b' + a) + BigInt('0b' + b)).toString(2);
-}
-
-// ============ SOLUTION 4: Pad and Add ============
-function addBinaryPad(a, b) {
-    const maxLen = Math.max(a.length, b.length);
-    a = a.padStart(maxLen, '0');
-    b = b.padStart(maxLen, '0');
-    
-    let result = '';
-    let carry = 0;
-    
-    for (let i = maxLen - 1; i >= 0; i--) {
-        const sum = parseInt(a[i]) + parseInt(b[i]) + carry;
-        result = (sum % 2) + result;
-        carry = Math.floor(sum / 2);
-    }
-    
-    if (carry > 0) result = '1' + result;
-    return result;
-}
-
-// ============ BONUS: Subtract Binary ============
-function subtractBinary(a, b) {
-    let result = '';
-    let borrow = 0;
-    let i = a.length - 1;
-    let j = b.length - 1;
-    
-    while (i >= 0) {
-        let digitA = parseInt(a[i]);
-        const digitB = j >= 0 ? parseInt(b[j]) : 0;
-        
-        digitA -= borrow;
-        
-        if (digitA < digitB) {
-            digitA += 2;
-            borrow = 1;
+        if (square === x) return mid;
+        if (square < x) {
+            result = mid;
+            left = mid + 1;
         } else {
-            borrow = 0;
+            right = mid - 1;
         }
-        
-        result = (digitA - digitB) + result;
-        i--;
-        j--;
     }
     
-    result = result.replace(/^0+/, '') || '0';
     return result;
 }
 
-// ============ BONUS: Multiply Binary ============
-function multiplyBinary(a, b) {
-    if (a === "0" || b === "0") return "0";
+// ============ SOLUTION 2: Newton's Method ============
+function mySqrtNewton(x) {
+    if (x < 2) return x;
     
-    const result = new Array(a.length + b.length).fill(0);
+    let guess = x;
+    while (guess * guess > x) {
+        guess = Math.floor((guess + x / guess) / 2);
+    }
+    return guess;
+}
+
+// ============ SOLUTION 3: Bit Manipulation ============
+function mySqrtBitwise(x) {
+    if (x < 2) return x;
     
-    for (let i = a.length - 1; i >= 0; i--) {
-        for (let j = b.length - 1; j >= 0; j--) {
-            const product = parseInt(a[i]) * parseInt(b[j]);
-            const pos1 = i + j;
-            const pos2 = i + j + 1;
-            
-            const sum = product + result[pos2];
-            result[pos2] = sum % 2;
-            result[pos1] += Math.floor(sum / 2);
+    let bit = 1 << 15;
+    let result = 0;
+    
+    while (bit > 0) {
+        const candidate = result + bit;
+        if (candidate * candidate <= x) {
+            result = candidate;
+        }
+        bit >>= 1;
+    }
+    
+    return result;
+}
+
+// ============ BONUS: Perfect Square Check ============
+function isPerfectSquare(num) {
+    if (num < 2) return true;
+    
+    let left = 1;
+    let right = Math.floor(num / 2);
+    
+    while (left <= right) {
+        const mid = Math.floor((left + right) / 2);
+        const square = mid * mid;
+        
+        if (square === num) return true;
+        if (square < num) left = mid + 1;
+        else right = mid - 1;
+    }
+    
+    return false;
+}
+
+// ============ BONUS: Cube Root ============
+function cubeRoot(x) {
+    if (x === 0) return 0;
+    
+    const isNegative = x < 0;
+    const target = Math.abs(x);
+    
+    let left = 0, right = target, result = 0;
+    
+    while (left <= right) {
+        const mid = Math.floor((left + right) / 2);
+        const cube = mid * mid * mid;
+        
+        if (cube === target) return isNegative ? -mid : mid;
+        if (cube < target) {
+            result = mid;
+            left = mid + 1;
+        } else {
+            right = mid - 1;
         }
     }
     
-    const start = result.findIndex(x => x !== 0);
-    return start === -1 ? "0" : result.slice(start).join('');
+    return isNegative ? -result : result;
 }
 
-// ============ BONUS: Decimal to Binary ============
-function decimalToBinary(decimal) {
-    if (decimal === 0) return "0";
-    let binary = '';
-    while (decimal > 0) {
-        binary = (decimal % 2) + binary;
-        decimal = Math.floor(decimal / 2);
+// ============ BONUS: Sqrt with Precision ============
+function sqrtPrecision(x, precision = 6) {
+    if (x < 2) return x;
+    
+    let left = 0, right = x;
+    
+    while (right - left > Math.pow(10, -precision)) {
+        const mid = (left + right) / 2;
+        if (mid * mid < x) left = mid;
+        else right = mid;
     }
-    return binary;
+    
+    return parseFloat(((left + right) / 2).toFixed(precision));
 }
 
 // ============ TEST SUITE ============
 function runTests() {
     const testCases = [
-        { a: "11", b: "1", expected: "100", desc: "Simple" },
-        { a: "1010", b: "1011", expected: "10101", desc: "Longer" },
-        { a: "0", b: "0", expected: "0", desc: "Both zero" },
-        { a: "1", b: "1", expected: "10", desc: "Carry" },
-        { a: "1111", b: "1111", expected: "11110", desc: "All ones" },
-        { a: "100", b: "110010", expected: "110110", desc: "Different lengths" },
-        { a: "0", b: "1", expected: "1", desc: "One zero" },
-        { a: "111", b: "1", expected: "1000", desc: "Carry chain" }
+        { input: 4, expected: 2, desc: "Perfect square" },
+        { input: 8, expected: 2, desc: "Non-perfect" },
+        { input: 0, expected: 0, desc: "Zero" },
+        { input: 1, expected: 1, desc: "One" },
+        { input: 16, expected: 4, desc: "Perfect square 16" },
+        { input: 2, expected: 1, desc: "Small" },
+        { input: 3, expected: 1, desc: "Small" },
+        { input: 2147395599, expected: 46339, desc: "Large number" },
+        { input: 2147483647, expected: 46340, desc: "Max 32-bit" }
     ];
     
-    testCases.forEach(({ a, b, expected, desc }) => {
-        const result = addBinary(a, b);
+    testCases.forEach(({ input, expected, desc }) => {
+        const result = mySqrt(input);
         const passed = result === expected;
         console.log(
             `✅ ${desc}:`,
-            `"${a}" + "${b}" = "${result}"`,
-            passed ? '✓ PASS' : `✗ FAIL (expected "${expected}")`
+            `√${input} = ${result}`,
+            passed ? '✓ PASS' : `✗ FAIL (expected ${expected})`
         );
     });
     
     // Bonus tests
     console.log("\n=== Bonus Tests ===");
-    console.log("Subtract:", subtractBinary("100", "1"));      // "11"
-    console.log("Multiply:", multiplyBinary("11", "11"));      // "1001"
-    console.log("Dec to Bin:", decimalToBinary(10));           // "1010"
-    console.log("BigInt:", addBinaryBigInt("1111", "1111"));   // "11110"
+    console.log("Perfect square 16?", isPerfectSquare(16));   // true
+    console.log("Perfect square 14?", isPerfectSquare(14));   // false
+    console.log("Cube root 27:", cubeRoot(27));                // 3
+    console.log("Cube root -27:", cubeRoot(-27));              // -3
+    console.log("√2 precise:", sqrtPrecision(2, 10));          // 1.4142135624
+    console.log("Newton √8:", mySqrtNewton(8));                // 2
 }
 
 runTests();
 
 module.exports = {
-    addBinary,
-    addBinaryArray,
-    addBinaryBigInt,
-    addBinaryPad,
-    subtractBinary,
-    multiplyBinary,
-    decimalToBinary
+    mySqrt,
+    mySqrtNewton,
+    mySqrtBitwise,
+    isPerfectSquare,
+    cubeRoot,
+    sqrtPrecision
 };
