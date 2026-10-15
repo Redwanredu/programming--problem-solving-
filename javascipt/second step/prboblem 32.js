@@ -132,7 +132,7 @@ function runTests() {
         );
     });
     
-    // Bonus tests
+  
     console.log("\n=== Bonus Tests ===");
     console.log("With obstacles:", uniquePathsWithObstacles([[0,0,0],[0,1,0],[0,0,0]])); // 2
     console.log("Min path sum:", minPathSum([[1,3,1],[1,5,1],[4,2,1]])); // 7
